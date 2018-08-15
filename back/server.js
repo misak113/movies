@@ -21,7 +21,7 @@ const googleSearch = new GoogleSearch({
 });
 
 const cacheDbPath = __dirname + '/cache';
-const videoInfosPath = __dirname + '/videoInfos.json';
+const videoInfosPath = __dirname + '/../front/public/videoInfos.json';
 const memoryCache = {};
 
 const movieDirectoryPaths = [
@@ -182,6 +182,7 @@ async function getVideoInfos() {
                 const { name: subName } = sanitizeName(path.basename(path.dirname(baseFolder))+ ' ' + baseFolderDirname + ' ' + name);
                 name = subName;
             }
+            videoInfo.name = name;
             const searchResult = await loadOrSaveCache(`movieSearch.${md5checksum(name)}`, () => searchGoogle(name), [1, 'year']);
             if (searchResult.items && searchResult.items.length > 0) {
                 const csfdLink = searchResult.items[0].link;

@@ -9,6 +9,8 @@
 # production
 /build
 
+/public/videoInfos.json
+
 # misc
 .DS_Store
 .env.local
