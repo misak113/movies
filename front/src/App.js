@@ -51,7 +51,7 @@ class App extends Component {
                         {videoInfo.movie ? videoInfo.movie.genre.join(' / ') : null}
                       </td>
                       <td>
-                        {videoInfo.movie ? videoInfo.movie.country : null}
+                        {videoInfo.movie ? videoInfo.movie.country.join(' / ') : null}
                       </td>
                       <td>
                         {videoInfo.movie ? videoInfo.movie.year : null}

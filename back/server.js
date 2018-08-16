@@ -200,14 +200,17 @@ async function getVideoInfos() {
                     const image = $csfdOverview.find('#poster img').attr('src');
                     const description = $csfdOverview.find('#plots .content ul li:nth-child(1) div:nth-child(1)').text().trim();
                     const genre = $csfdOverview.find('#profile .info .genre').text().trim().split(' / ');
-                    const origin = $csfdOverview.find('#profile .info .origin').text().trim().match(/([\w ]+), (\d{4,4}), (\d+) min/);
+                    const origin = $csfdOverview.find('#profile .info .origin').text().trim().match(/([a-zA-Z0-9À-ž \/]+), (\d{4,4})( - (\d{4,4}))?, ((\d+) h )?(\d+) min/);
+                    const hours = origin[5] ? parseInt(origin[6]) : 0;
+                    const minutes = parseInt(origin[7]);
                     videoInfo.movie = {
                         title,
                         rating,
                         genre,
-                        country: origin[1],
+                        country: origin[1].split(' / '),
                         year: parseInt(origin[2]),
-                        length: parseInt(origin[3]),
+                        yearEnd: origin[4] ? parseInt(origin[4]) : parseInt(origin[2]),
+                        length: hours * 60 + minutes,
                         image,
                         csfdOverviewLink,
                         description,
