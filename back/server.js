@@ -176,8 +176,9 @@ async function getVideoInfos() {
         videoInfos = [...videoInfos, ...videoInfosChunk];
     }
 
-    try {
-        for (const videoInfo of videoInfos) {
+    let skipSearch = false;
+    for (const videoInfo of videoInfos) {
+        try {
             const fileBaseName = path.basename(videoInfo.filePath, path.extname(videoInfo.filePath));
             let { name, spacedName, simpleName } = sanitizeName(fileBaseName);
             const { serie, episode } = parseSeries(spacedName);
@@ -188,7 +189,7 @@ async function getVideoInfos() {
                 name = subName;
             }
             videoInfo.name = name;
-            const searchResult = await loadOrSaveCache(`movieSearch.${md5checksum(name)}`, () => searchGoogle(name), [1, 'year']);
+            const searchResult = skipSearch ? {} : await loadOrSaveCache(`movieSearch.${md5checksum(name)}`, () => searchGoogle(name), [1, 'year']);
             if (searchResult.items && searchResult.items.length > 0) {
                 const csfdLink = searchResult.items[0].link;
                 const csfdLinkMatches = csfdLink.match(/^https\:\/\/www\.csfd\.cz\/film\/([\w-]+)\//);
@@ -225,9 +226,13 @@ async function getVideoInfos() {
                     console.log(videoInfo);
                 }
             }
+        } catch (error) {
+            if (error.errors && error.errors[0] && error.errors[0].domain === 'usageLimits') {
+                skipSearch = true;
+            } else {
+                throw error;
+            }
         }
-    } catch (error) {
-        console.error(error);
     }
     return videoInfos;
 }
