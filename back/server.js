@@ -115,16 +115,16 @@ function searchGoogle(query, siteSearch = "http://www.csfd.cz/") {
 
 function sanitizeName(fileBaseName) {
     const spacedName = fileBaseName
-        .replace(/([^a-zA-Z0-9À-ž]|_)/g, ' ')
+        .replace(/([^a-zA-Z0-9ěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮ]|_)/gi, ' ')
         .replace(/\s+/g, ' ');
-    const firstPartNameMatches = spacedName
-        .match(/(^([a-zA-Z0-9À-ž ]*)(\d{4,4}|s\d{2,2}e\d{2,2}|\d{1,2}x\d{2,2}|\d{1,2}\d{2,2}))/i);
-    const firstPartName = firstPartNameMatches ? firstPartNameMatches[1] : spacedName;
-    const simpleName = firstPartNameMatches ? (firstPartNameMatches[2].length < 2 ? '' : firstPartNameMatches[2]) : spacedName;
-    const name = firstPartName
+    const sanitizedName = spacedName
         .replace(/\S*(hdtv|czdab|endab|xvid|divx|h264|1080|x264|dvdrip|brrip|dvb|dlrip)\S*/gi, '')
         .replace(/(\s+)(cz|dl|cd\d|vtv|avi|lol|tit|ing|dl|web|xor|zip|dub|dd5|bluray|ac3|aac)(\s+|$)/gi, '');
-    return { spacedName, name, simpleName };
+    const firstPartNameMatches = sanitizedName
+        .match(/(^([a-zA-Z0-9ěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮ ]*)(\d{4,4}|s\d{2,2}e\d{2,2}|\d{1,2}x\d{2,2}|\d{1,2}\d{2,2}))/i);
+    const name = firstPartNameMatches ? firstPartNameMatches[1] : sanitizedName;
+    const simpleName = firstPartNameMatches ? (firstPartNameMatches[2].length < 2 ? '' : firstPartNameMatches[2]) : sanitizedName;
+    return { spacedName, sanitizedName, name, simpleName };
 }
 
 function parseSeries(spacedName) {
@@ -198,14 +198,14 @@ async function getVideoInfos() {
                         uri: csfdOverviewLink,
                         gzip: true,
                     }), [Math.round(Math.random() * 30 + 6), 'days']);
-                    console.log(videoInfo.filePath, csfdOverviewLink);
+                    console.log(name, videoInfo.filePath, csfdOverviewLink);
                     const $csfdOverview = jQuery(csfdOverview);
                     const title = $csfdOverview.find('#profile .info .header [itemprop="name"]').text().trim();
                     const rating = parseInt($csfdOverview.find('#rating .average').text().trim().match(/(\d+)%/)[1]);
                     const image = $csfdOverview.find('#poster img').attr('src');
                     const description = $csfdOverview.find('#plots .content ul li:nth-child(1) div:nth-child(1)').text().trim();
                     const genre = $csfdOverview.find('#profile .info .genre').text().trim().split(' / ');
-                    const origin = $csfdOverview.find('#profile .info .origin').text().trim().match(/([a-zA-Z0-9À-ž \/]+), (\d{4,4})( - (\d{4,4}))?, ((\d+) h )?(\d+) min/);
+                    const origin = $csfdOverview.find('#profile .info .origin').text().trim().match(/([a-zA-Z0-9ěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮ \/]+), (\d{4,4})( - (\d{4,4}))?, ((\d+) h )?(\d+) min/i);
                     const hours = origin[5] ? parseInt(origin[6]) : 0;
                     const minutes = parseInt(origin[7]);
                     videoInfo.movie = {
