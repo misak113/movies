@@ -42,7 +42,12 @@ function md5checksum(data) {
 
 async function loadOrSaveCache(name, execute, expiration) {
     const cacheDbFilePath = cacheDbPath + '/' + name + '.json';
-    memoryCache[name] = memoryCache[name] || (fs.existsSync(cacheDbFilePath) ? JSON.parse(fs.readFileSync(cacheDbFilePath).toString()) : undefined);
+    try {
+        memoryCache[name] = memoryCache[name] || (fs.existsSync(cacheDbFilePath) ? JSON.parse(fs.readFileSync(cacheDbFilePath).toString()) : undefined);
+    } catch (error) {
+        console.warn(`Wrong cache ${name}`, error);
+        fs.unlinkSync(cacheDbFilePath);
+    }
     if (typeof memoryCache[name] === 'undefined' || moment(memoryCache[name].expireAt).isBefore(moment())) {
         try {
             const value = await execute();
