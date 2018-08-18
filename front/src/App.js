@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import removeDiacritics from './removeDiacritics';
 import './App.css';
 
 class App extends Component {
@@ -7,14 +8,45 @@ class App extends Component {
 
   async componentDidMount() {
     const response = await fetch('videoInfos.json');
-    const videoInfos = await response.json();
+    this.videoInfos = await response.json();
+    this.videoInfos.forEach((videoInfo) => {
+      videoInfo.videoTitle = this.getVideoTitle(videoInfo);
+      videoInfo.videoTitlePlain = removeDiacritics(videoInfo.videoTitle);
+    });
+    this.updateList();
+  }
+
+  updateList() {
+    let videoInfos = this.videoInfos;
+
+    const searchText = this.searchInput.value;
+    if (searchText) {
+      videoInfos = videoInfos.filter((videoInfo) => videoInfo.videoTitlePlain.toLowerCase().indexOf(searchText.toLowerCase()) !== -1);
+    }
+
     this.setState({ videoInfos });
+  }
+
+  getVideoTitle(videoInfo) {
+    return videoInfo.movie ? videoInfo.movie.title : videoInfo.name;
   }
 
   render() {
     return (
       <div className="container">
-        <h1>Movies</h1>
+        <div className="row">
+          <div className="col-sm">
+            <h1>Movies</h1>
+          </div>
+          <div className="col-sm">
+          <div class="form-group">
+            <form onSubmit={(event) => { event.preventDefault(); this.updateList()}}>
+              <label for="searchInput">Search</label>
+              <input type="search" className="form-control" id="searchInput" placeholder="Search" ref={(searchInput) => this.searchInput = searchInput}/>
+            </form>
+          </div>
+          </div>
+        </div>
         <table className="table">
             <thead>
                 <tr>
@@ -41,7 +73,7 @@ class App extends Component {
                       </td>
                       <td title={videoInfo.movie ? videoInfo.movie.description : null}>
                         <a href={videoInfo.movie ? videoInfo.movie.csfdOverviewLink : null} target="_blank">
-                          {videoInfo.movie ? videoInfo.movie.title : videoInfo.name}
+                          {videoInfo.videoTitle}
                         </a>
                       </td>
                       <td>
