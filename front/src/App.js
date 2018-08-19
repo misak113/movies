@@ -32,6 +32,14 @@ class App extends Component {
       videoInfos = videoInfos.filter((videoInfo) => videoInfo.movie && videoInfo.movie.rating <= parseInt(this.maxRatingInput.value));
     }
 
+    if (this.minYearInput.value) {
+      videoInfos = videoInfos.filter((videoInfo) => videoInfo.movie && videoInfo.movie.year >= parseInt(this.minYearInput.value));
+    }
+
+    if (this.maxYearInput.value) {
+      videoInfos = videoInfos.filter((videoInfo) => videoInfo.movie && videoInfo.movie.year <= parseInt(this.maxYearInput.value));
+    }
+
     if (this.sortBy) {
       videoInfos = videoInfos.sort((vi1, vi2) => {
         switch (this.sortBy) {
@@ -130,7 +138,17 @@ class App extends Component {
                     </th>
                     <th></th>
                     <th></th>
-                    <th></th>
+                    <th>
+                      <form onSubmit={(event) => { event.preventDefault(); this.updateList()}}>
+                        <div className="form-group">
+                          <input type="number" className="form-control" placeholder="min" ref={(minYearInput) => this.minYearInput = minYearInput}/>
+                        </div>
+                        <div className="form-group">
+                          <input type="number" className="form-control" placeholder="max" ref={(maxYearInput) => this.maxYearInput = maxYearInput}/>
+                        </div>
+                        <button type="submit" style={{ display: 'none' }}/>
+                      </form>
+                    </th>
                     <th></th>
                     <th></th>
                 </tr>
