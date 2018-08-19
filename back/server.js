@@ -24,11 +24,7 @@ const cacheDbPath = __dirname + '/cache';
 const videoInfosPath = __dirname + '/../front/public/videoInfos.json';
 const memoryCache = {};
 
-const movieDirectoryPaths = [
-    '/d/Movies',
-    '/f/Movies',
-    '/c/Users/zabka/Downloads',
-];
+const movieDirectoryPaths = JSON.parse(process.env.directory_paths);
 
 const movieExtensions = [
     '.mp4',
