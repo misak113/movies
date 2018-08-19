@@ -5,8 +5,10 @@ import './App.css';
 
 class App extends Component {
 
+  filterGenres = [];
   state = {
-    countries: []
+    countries: [],
+    genres: [],
   };
 
   async componentDidMount() {
@@ -16,7 +18,10 @@ class App extends Component {
       videoInfo.videoTitle = this.getVideoTitle(videoInfo);
       videoInfo.videoTitlePlain = removeDiacritics(videoInfo.videoTitle);
     });
-    this.setState({ countries: _.uniq(_.flatten(this.videoInfos.filter((videoInfo) => videoInfo.movie).map((videoInfo) => videoInfo.movie.country))) });
+    this.setState({
+      countries: _.uniq(_.flatten(this.videoInfos.filter((videoInfo) => videoInfo.movie).map((videoInfo) => videoInfo.movie.country))),
+      genres: _.uniq(_.flatten(this.videoInfos.filter((videoInfo) => videoInfo.movie).map((videoInfo) => videoInfo.movie.genre))),
+    });
     this.updateList();
   }
 
@@ -26,6 +31,10 @@ class App extends Component {
     const searchText = this.searchInput.value;
     if (searchText) {
       videoInfos = videoInfos.filter((videoInfo) => videoInfo.videoTitlePlain.toLowerCase().indexOf(searchText.toLowerCase()) !== -1);
+    }
+
+    if (this.filterGenres.length > 0) {
+      videoInfos = videoInfos.filter((videoInfo) => videoInfo.movie && _.difference(this.filterGenres, videoInfo.movie.genre).length === 0);
     }
 
     if (this.country) {
@@ -142,7 +151,19 @@ class App extends Component {
                         <button type="submit" style={{ display: 'none' }}/>
                       </form>
                     </th>
-                    <th></th>
+                    <th>
+                      {[...this.filterGenres, ''].map((selectedGenre, index) => (
+                        <div className="form-group" key={selectedGenre}>
+                          <select value={selectedGenre} className="form-control" onChange={(event) => {
+                            this.filterGenres.splice(index, 1, ...event.target.value ? [event.target.value] : []);
+                            this.updateList();
+                          }}>
+                            <option value={''}>-- genre --</option>
+                            {[...selectedGenre ? [selectedGenre] : [], ..._.difference(this.state.genres, this.filterGenres)].map((genre) => <option key={genre} value={genre}>{genre}</option>)}
+                          </select>
+                        </div>
+                      ))}
+                    </th>
                     <th>
                         <div className="form-group">
                           <select className="form-control" onChange={(event) => {
