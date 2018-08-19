@@ -137,8 +137,6 @@ class App extends Component {
                       <form onSubmit={(event) => { event.preventDefault(); this.updateList()}}>
                         <div className="form-group">
                           <input type="number" className="form-control" placeholder="0 - min" ref={(minRatingInput) => this.minRatingInput = minRatingInput}/>
-                        </div>
-                        <div className="form-group">
                           <input type="number" className="form-control" placeholder="100 - max" ref={(maxRatingInput) => this.maxRatingInput = maxRatingInput}/>
                         </div>
                         <button type="submit" style={{ display: 'none' }}/>
@@ -160,8 +158,6 @@ class App extends Component {
                       <form onSubmit={(event) => { event.preventDefault(); this.updateList()}}>
                         <div className="form-group">
                           <input type="number" className="form-control" placeholder="min" ref={(minYearInput) => this.minYearInput = minYearInput}/>
-                        </div>
-                        <div className="form-group">
                           <input type="number" className="form-control" placeholder="max" ref={(maxYearInput) => this.maxYearInput = maxYearInput}/>
                         </div>
                         <button type="submit" style={{ display: 'none' }}/>
