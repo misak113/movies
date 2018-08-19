@@ -24,6 +24,14 @@ class App extends Component {
       videoInfos = videoInfos.filter((videoInfo) => videoInfo.videoTitlePlain.toLowerCase().indexOf(searchText.toLowerCase()) !== -1);
     }
 
+    if (this.minRatingInput.value) {
+      videoInfos = videoInfos.filter((videoInfo) => videoInfo.movie && videoInfo.movie.rating >= parseInt(this.minRatingInput.value));
+    }
+
+    if (this.maxRatingInput.value) {
+      videoInfos = videoInfos.filter((videoInfo) => videoInfo.movie && videoInfo.movie.rating <= parseInt(this.maxRatingInput.value));
+    }
+
     if (this.sortBy) {
       videoInfos = videoInfos.sort((vi1, vi2) => {
         switch (this.sortBy) {
@@ -54,9 +62,9 @@ class App extends Component {
             <h1>Movies</h1>
           </div>
           <div className="col-sm">
-          <div class="form-group">
+          <div className="form-group">
             <form onSubmit={(event) => { event.preventDefault(); this.updateList()}}>
-              <label for="searchInput">Search</label>
+              <label htmlFor="searchInput">Search</label>
               <input type="search" className="form-control" id="searchInput" placeholder="Search" ref={(searchInput) => this.searchInput = searchInput}/>
             </form>
           </div>
@@ -105,6 +113,26 @@ class App extends Component {
                       </a>
                     </th>
                     <th>Video</th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th>
+                      <form onSubmit={(event) => { event.preventDefault(); this.updateList()}}>
+                        <div className="form-group">
+                          <input type="number" className="form-control" placeholder="0 - min" ref={(minRatingInput) => this.minRatingInput = minRatingInput}/>
+                        </div>
+                        <div className="form-group">
+                          <input type="number" className="form-control" placeholder="100 - max" ref={(maxRatingInput) => this.maxRatingInput = maxRatingInput}/>
+                        </div>
+                        <button type="submit" style={{ display: 'none' }}/>
+                      </form>
+                    </th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
