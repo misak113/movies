@@ -132,9 +132,9 @@ function sanitizeName(fileBaseName) {
         .replace(/(\s+)(cz|dl|cd\d|vtv|avi|lol|tit|ing|dl|web|xor|zip|dub|dd5|bluray|ac3|aac)(\s+|$)/gi, ' ')
         .replace(/\s+/g, ' ');
     const firstPartNameMatches = sanitizedName
-        .match(/(^([a-zA-Z0-9ěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮ ]*)(\d{4,4}|s\d{2,2}e\d{2,2}|\d{1,2}x\d{2,2}|\d{1,2}\d{2,2}))/i);
+        .match(/(^([a-zA-Z0-9ěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮ ]*)((19|20)\d{2,2}|s\d{2,2}e\d{2,2}|\d{1,2}x\d{2,2}))/i);
     const name = firstPartNameMatches ? firstPartNameMatches[1] : sanitizedName;
-    const simpleName = firstPartNameMatches ? (firstPartNameMatches[2].length < 2 ? '' : firstPartNameMatches[2]) : sanitizedName;
+    const simpleName = firstPartNameMatches ? (firstPartNameMatches[2].length < 2 ? '' : firstPartNameMatches[2]).trim() : sanitizedName;
     return { spacedName, sanitizedName, name, simpleName };
 }
 
@@ -151,12 +151,16 @@ function parseSeries(spacedName) {
     if (seriesMatches = spacedName.match(/(0\d{1,1})(\d{2,2})/i)) {
         serie = parseInt(seriesMatches[1]);
         episode = parseInt(seriesMatches[2]);
-    } else
-    if (seriesMatches = spacedName.match(/\D(\d{1,1})(\d{2,2})/i)) {
-        serie = parseInt(seriesMatches[1]);
-        episode = parseInt(seriesMatches[2]);
     }
     return { serie, episode };
+}
+
+function parseYear(spacedName) {
+    let seriesMatches, year;
+    if (seriesMatches = spacedName.match(/(^([a-zA-Z0-9ěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮ ]*)((19|20)\d{2,2}))/i)) {
+        year = parseInt(seriesMatches[2]);
+    }
+    return { year };
 }
 
 async function run() {
@@ -192,15 +196,20 @@ async function getVideoInfos() {
         try {
             const fileBaseName = path.basename(videoInfo.filePath, path.extname(videoInfo.filePath));
             let { name, spacedName, simpleName } = sanitizeName(fileBaseName);
+            const { year } = parseYear(spacedName);
             const { serie, episode } = parseSeries(spacedName);
             if (!simpleName) {
                 const baseFolder = path.dirname(videoInfo.filePath);
                 const baseFolderDirname = path.basename(baseFolder);
-                const { name: subName } = sanitizeName(path.basename(path.dirname(baseFolder))+ ' ' + baseFolderDirname + ' ' + name);
+                const { name: subName, simpleName: subSimpleName } = sanitizeName(path.basename(path.dirname(baseFolder))+ ' ' + baseFolderDirname + ' ' + name);
                 name = subName;
+                simpleName = subSimpleName;
             }
+            const simpleNameYear = simpleName + (year ? ' ' + year : '');
             videoInfo.name = name;
-            const searchResult = skipSearch ? await loadCache(`movieSearch.${md5checksum(name)}`) : await loadOrSaveCache(`movieSearch.${md5checksum(name)}`, () => searchGoogle(name), [1, 'year']);
+            const searchResult = skipSearch
+                ? await loadCache(`movieSearch.${md5checksum(simpleNameYear)}`)
+                : await loadOrSaveCache(`movieSearch.${md5checksum(simpleNameYear)}`, () => searchGoogle(simpleNameYear), [1, 'year']);
             if (searchResult && searchResult.items && searchResult.items.length > 0) {
                 const csfdLink = searchResult.items[0].link;
                 const csfdLinkMatches = csfdLink.match(/^https\:\/\/www\.csfd\.cz\/film\/([\w-]+)\//);
@@ -210,7 +219,7 @@ async function getVideoInfos() {
                         uri: csfdOverviewLink,
                         gzip: true,
                     }), [Math.round(Math.random() * 30 + 6), 'days']);
-                    console.log(name, videoInfo.filePath, csfdOverviewLink);
+                    console.log(simpleNameYear, videoInfo.filePath, csfdOverviewLink);
                     const $csfdOverview = jQuery(csfdOverview);
                     const title = $csfdOverview.find('#profile .info .header [itemprop="name"]').text().trim();
                     const rating = parseInt($csfdOverview.find('#rating .average').text().trim().match(/(\d+)%/)[1]);
