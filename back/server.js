@@ -25,6 +25,7 @@ const videoInfosPath = __dirname + '/../front/public/videoInfos.json';
 const memoryCache = {};
 
 const movieDirectoryPaths = JSON.parse(process.env.directory_paths);
+const movieExcludePaths = process.env.exclude_paths ? JSON.parse(process.env.exclude_paths) : [];
 
 const movieExtensions = [
     '.mp4',
@@ -80,14 +81,16 @@ async function loadOrSaveCache(name, execute, expiration) {
     }
 }
 
-function scanMovies(directoryPaths) {
-    const filePaths = directoryPaths.reduce(
+function scanMovies(directoryPaths, excludePaths) {
+    const filePaths = directoryPaths
+    .reduce(
         (filePaths, baseDirPath) => [
             ...filePaths,
             ...fs.readdirSync(baseDirPath).map((dirName) => baseDirPath + '/' + dirName),
         ],
         [],
-    );
+    )
+    .filter((filePath) => _.every(excludePaths, (excludePath) => filePath.indexOf(excludePath) !== 0));
     return _.flatten(filePaths.map(
         (filePath) => {
             const stat = fs.statSync(filePath);
@@ -169,7 +172,7 @@ async function run() {
 }
 
 async function getVideoInfos() {
-    const movieFilePaths = await loadOrSaveCache('filePaths', () => scanMovies(movieDirectoryPaths), [1, 'hour']);
+    const movieFilePaths = await loadOrSaveCache('filePaths', () => scanMovies(movieDirectoryPaths, movieExcludePaths), [1, 'hour']);
     const movieFilePathsChunks = _.chunk(movieFilePaths, 1);
     let videoInfos = [];
     for (const movieFilePathsChunk of movieFilePathsChunks) {
