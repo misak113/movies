@@ -114,8 +114,9 @@ function sanitizeName(fileBaseName) {
         .replace(/([^a-zA-Z0-9ěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮ]|_)/gi, ' ')
         .replace(/\s+/g, ' ');
     const sanitizedName = spacedName
-        .replace(/\S*(hdtv|czdab|endab|xvid|divx|h264|1080|x264|dvdrip|brrip|dvb|dlrip)\S*/gi, '')
-        .replace(/(\s+)(cz|dl|cd\d|vtv|avi|lol|tit|ing|dl|web|xor|zip|dub|dd5|bluray|ac3|aac)(\s+|$)/gi, '');
+        .replace(/\S*(hdtv|czdab|endab|xvid|divx|h264|1080|x264|dvdrip|brrip|dvb|dlrip|dabing)\S*/gi, ' ')
+        .replace(/(\s+)(cz|dl|cd\d|vtv|avi|lol|tit|ing|dl|web|xor|zip|dub|dd5|bluray|ac3|aac)(\s+|$)/gi, ' ')
+        .replace(/\s+/g, ' ');
     const firstPartNameMatches = sanitizedName
         .match(/(^([a-zA-Z0-9ěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮ ]*)(\d{4,4}|s\d{2,2}e\d{2,2}|\d{1,2}x\d{2,2}|\d{1,2}\d{2,2}))/i);
     const name = firstPartNameMatches ? firstPartNameMatches[1] : sanitizedName;
@@ -202,9 +203,9 @@ async function getVideoInfos() {
                     const image = $csfdOverview.find('#poster img').attr('src');
                     const description = $csfdOverview.find('#plots .content ul li:nth-child(1) div:nth-child(1)').text().trim();
                     const genre = $csfdOverview.find('#profile .info .genre').text().trim().split(' / ');
-                    const origin = $csfdOverview.find('#profile .info .origin').text().trim().match(/([a-zA-Z0-9ěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮ \/]+), (\d{4,4})( - (\d{4,4}))?, ((\d+) h )?(\d+) min/i);
+                    const origin = $csfdOverview.find('#profile .info .origin').text().trim().match(/([a-zA-Z0-9ěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮ \/]+), (\d{4,4})( - (\d{4,4}))?, ((\d+) h )?(\d+)(x(\d+)–(\d+))? min/i);
                     const hours = origin[5] ? parseInt(origin[6]) : 0;
-                    const minutes = parseInt(origin[7]);
+                    const minutes = typeof origin[8] === 'undefined' ? parseInt(origin[7]) : parseInt(origin[7]) * (parseInt(origin[9]) + parseInt(origin[10])) / 2;
                     videoInfo.movie = {
                         title,
                         rating,
