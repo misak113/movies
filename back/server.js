@@ -45,7 +45,7 @@ async function loadCache(name) {
         console.warn(`Wrong cache ${name}`, error);
         fs.unlinkSync(cacheDbFilePath);
     }
-    if (typeof memoryCache[name] !== 'undefined' || moment(memoryCache[name].expireAt).isBefore(moment())) {
+    if (typeof memoryCache[name] !== 'undefined' && moment(memoryCache[name].expireAt).isBefore(moment())) {
         console.warn('Cache has expired. Use old value.');
     }
     return memoryCache[name] ? memoryCache[name].value : undefined;
