@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
+import _ from 'lodash';
 import removeDiacritics from './removeDiacritics';
 import './App.css';
 
 class App extends Component {
 
-  state = {};
+  state = {
+    countries: []
+  };
 
   async componentDidMount() {
     const response = await fetch('videoInfos.json');
@@ -13,6 +16,7 @@ class App extends Component {
       videoInfo.videoTitle = this.getVideoTitle(videoInfo);
       videoInfo.videoTitlePlain = removeDiacritics(videoInfo.videoTitle);
     });
+    this.setState({ countries: _.uniq(_.flatten(this.videoInfos.filter((videoInfo) => videoInfo.movie).map((videoInfo) => videoInfo.movie.country))) });
     this.updateList();
   }
 
@@ -22,6 +26,10 @@ class App extends Component {
     const searchText = this.searchInput.value;
     if (searchText) {
       videoInfos = videoInfos.filter((videoInfo) => videoInfo.videoTitlePlain.toLowerCase().indexOf(searchText.toLowerCase()) !== -1);
+    }
+
+    if (this.country) {
+      videoInfos = videoInfos.filter((videoInfo) => videoInfo.movie && videoInfo.movie.country.indexOf(this.country) !== -1);
     }
 
     if (this.minRatingInput.value) {
@@ -137,7 +145,17 @@ class App extends Component {
                       </form>
                     </th>
                     <th></th>
-                    <th></th>
+                    <th>
+                        <div className="form-group">
+                          <select className="form-control" onChange={(event) => {
+                            this.country = event.target.value;
+                            this.updateList();
+                          }}>
+                            <option value={''}>-- country --</option>
+                            {this.state.countries.map((country) => <option key={country} value={country}>{country}</option>)}
+                          </select>
+                        </div>
+                    </th>
                     <th>
                       <form onSubmit={(event) => { event.preventDefault(); this.updateList()}}>
                         <div className="form-group">
