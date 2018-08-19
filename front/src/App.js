@@ -90,6 +90,10 @@ class App extends Component {
         <div className="row">
           <div className="col-sm">
             <h1>Movies</h1>
+            {this.state.videoInfos && this.videoInfos ? (
+              <p><strong>Number of movies:</strong> {this.state.videoInfos.length} / {this.videoInfos.length}</p>
+            ) : null}
+            <div className="alert alert-danger">Number of unrecognized: {this.videoInfos && this.videoInfos.filter((videoInfo) => !videoInfo.movie).length}</div>
           </div>
           <div className="col-sm">
           <div className="form-group">
@@ -208,7 +212,7 @@ class App extends Component {
                       <td title={videoInfo.movie ? videoInfo.movie.description : null}>
                         <img src={videoInfo.movie ? videoInfo.movie.image : null} width={60}/>
                       </td>
-                      <td title={videoInfo.movie ? videoInfo.movie.description : null}>
+                      <td title={videoInfo.movie ? videoInfo.movie.description : null} className={!videoInfo.movie ? 'bg-danger' : null}>
                         <a href={videoInfo.movie ? videoInfo.movie.csfdOverviewLink : null} target="_blank">
                           {videoInfo.videoTitle}
                         </a>
