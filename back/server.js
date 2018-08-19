@@ -36,6 +36,20 @@ function md5checksum(data) {
     return crypto.createHash('md5').update(data).digest("hex");
 }
 
+async function loadCache(name) {
+    const cacheDbFilePath = cacheDbPath + '/' + name + '.json';
+    try {
+        memoryCache[name] = memoryCache[name] || (fs.existsSync(cacheDbFilePath) ? JSON.parse(fs.readFileSync(cacheDbFilePath).toString()) : undefined);
+    } catch (error) {
+        console.warn(`Wrong cache ${name}`, error);
+        fs.unlinkSync(cacheDbFilePath);
+    }
+    if (typeof memoryCache[name] !== 'undefined' || moment(memoryCache[name].expireAt).isBefore(moment())) {
+        console.warn('Cache has expired. Use old value.');
+    }
+    return memoryCache[name] ? memoryCache[name].value : undefined;
+}
+
 async function loadOrSaveCache(name, execute, expiration) {
     const cacheDbFilePath = cacheDbPath + '/' + name + '.json';
     try {
@@ -186,8 +200,8 @@ async function getVideoInfos() {
                 name = subName;
             }
             videoInfo.name = name;
-            const searchResult = skipSearch ? {} : await loadOrSaveCache(`movieSearch.${md5checksum(name)}`, () => searchGoogle(name), [1, 'year']);
-            if (searchResult.items && searchResult.items.length > 0) {
+            const searchResult = skipSearch ? await loadCache(`movieSearch.${md5checksum(name)}`) : await loadOrSaveCache(`movieSearch.${md5checksum(name)}`, () => searchGoogle(name), [1, 'year']);
+            if (searchResult && searchResult.items && searchResult.items.length > 0) {
                 const csfdLink = searchResult.items[0].link;
                 const csfdLinkMatches = csfdLink.match(/^https\:\/\/www\.csfd\.cz\/film\/([\w-]+)\//);
                 if (csfdLinkMatches) {
