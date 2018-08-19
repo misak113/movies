@@ -127,12 +127,24 @@ function searchGoogle(query, siteSearch = "http://www.csfd.cz/") {
 }
 
 function sanitizeName(fileBaseName) {
+    let yearBracketsMatches;
+    if (yearBracketsMatches = fileBaseName.match(/\((\d{4,4})\)/)) {
+        fileBaseName = fileBaseName.replace(yearBracketsMatches[1], yearBracketsMatches[1].substring(1, 4));
+    }
     const spacedName = fileBaseName
+        .match(/^([^\(\)]+)/i)[1]
         .replace(/([^a-zA-Z0-9ěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮ]|_)/gi, ' ')
         .replace(/\s+/g, ' ');
-    const sanitizedName = spacedName
-        .replace(/\S*(hdtv|czdab|endab|xvid|divx|h264|1080|x264|dvdrip|brrip|dvb|dlrip|dabing)\S*/gi, ' ')
-        .replace(/(\s+)(cz|dl|cd\d|vtv|avi|lol|tit|ing|dl|web|xor|zip|dub|dd5|bluray|ac3|aac)(\s+|$)/gi, ' ')
+    const meanlessWords = ['hdtv', 'czdab', 'endab', 'xvid', 'divx', 'h264', '1080', 'x264', '480p', 'dvdrip', 'dvd rip', 'brrip', 'dvb', 'dlrip', 'dabing', 'tv rip', ' část ', 'titulky', ' cz ', ' en '];
+    const firstIndexOfMeanlessWord = meanlessWords
+        .reduce((index, word) => {
+            const indexOfWord = spacedName.toLowerCase().indexOf(word);
+            return indexOfWord !== -1 && indexOfWord < index ? indexOfWord : index
+        }, spacedName.length);
+    const sanitizedName = spacedName.substring(0, firstIndexOfMeanlessWord)
+        //.replace(/\S*(hdtv|czdab|endab|xvid|divx|h264|1080|x264|dvdrip|brrip|dvb|dlrip|dabing|titulky)\S*/gi, ' ')
+        .replace(/(\s+)(cz|dl|cd\d|vtv|avi|lol|tit|ing|dl|web|xor|zip|dub|dd5|bluray|ac3|aac|avi)(\s+|$)/gi, ' ')
+        .replace(/(\s+)(cz|dl|cd\d|vtv|avi|lol|tit|ing|dl|web|xor|zip|dub|dd5|bluray|ac3|aac|avi)(\s+|$)/gi, ' ')
         .replace(/\s+/g, ' ');
     const firstPartNameMatches = sanitizedName
         .match(/(^([a-zA-Z0-9ěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮ ]*)((19|20)\d{2,2}|s\d{2,2}e\d{2,2}|\d{1,2}x\d{2,2}))/i);
@@ -204,7 +216,7 @@ async function getVideoInfos() {
             if (!simpleName) {
                 const baseFolder = path.dirname(videoInfo.filePath);
                 const baseFolderDirname = path.basename(baseFolder);
-                const { name: subName, simpleName: subSimpleName } = sanitizeName(path.basename(path.dirname(baseFolder))+ ' ' + baseFolderDirname + ' ' + name);
+                const { name: subName, simpleName: subSimpleName } = sanitizeName(path.basename(path.dirname(baseFolder))+ '/' + baseFolderDirname + '/' + fileBaseName);
                 name = subName;
                 simpleName = subSimpleName;
             }
