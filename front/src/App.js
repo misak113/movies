@@ -59,15 +59,20 @@ class App extends Component {
 
     if (this.sortBy) {
       videoInfos = videoInfos.sort((vi1, vi2) => {
+        const direction = parseInt(this.sortBy[0] + '1');
         switch (this.sortBy) {
-          case 'title':
-            return vi1.videoTitlePlain.toLowerCase().localeCompare(vi2.videoTitlePlain.toLowerCase());
-          case 'rating':
-            return (vi2.movie ? vi2.movie.rating : 0) - (vi1.movie ? vi1.movie.rating : 0);
-          case 'year':
-            return (vi1.movie ? vi1.movie.year : 0) - (vi2.movie ? vi2.movie.year : 0);
-          case 'length':
-            return (vi1.movie ? vi1.movie.length : 0) - (vi2.movie ? vi2.movie.length : 0);
+          case '+title':
+          case '-title':
+            return vi1.videoTitlePlain.toLowerCase().localeCompare(vi2.videoTitlePlain.toLowerCase()) * direction;
+          case '+rating':
+          case '-rating':
+            return ((vi1.movie ? vi1.movie.rating : 0) - (vi2.movie ? vi2.movie.rating : 0)) * direction;
+          case '+year':
+          case '-year':
+            return ((vi1.movie ? vi1.movie.year : 0) - (vi2.movie ? vi2.movie.year : 0)) * direction;
+          case '+length':
+          case '-length':
+            return ((vi1.movie ? vi1.movie.length : 0) - (vi2.movie ? vi2.movie.length : 0)) * direction;
         }
       });
     }
@@ -102,19 +107,21 @@ class App extends Component {
                     <th>
                       <a href="" onClick={(event) => {
                         event.preventDefault();
-                        this.sortBy = 'title';
+                        this.sortBy = this.sortBy === '+title' ? '-title' : '+title';
                         this.updateList();
                       }}>
                         Title
+                        {this.sortBy && this.sortBy.substring(1) === 'title' && (this.sortBy[0] === '-' ? '⮟' : '⮝')}
                       </a>
                     </th>
                     <th>
                       <a href="" onClick={(event) => {
                         event.preventDefault();
-                        this.sortBy = 'rating';
+                        this.sortBy = this.sortBy === '+rating' ? '-rating' : '+rating';
                         this.updateList();
                       }}>
                         Rating
+                        {this.sortBy && this.sortBy.substring(1) === 'rating' && (this.sortBy[0] === '-' ? '⮟' : '⮝')}
                       </a>
                     </th>
                     <th>Genre</th>
@@ -122,19 +129,21 @@ class App extends Component {
                     <th>
                       <a href="" onClick={(event) => {
                         event.preventDefault();
-                        this.sortBy = 'year';
+                        this.sortBy = this.sortBy === '+year' ? '-year' : '+year';
                         this.updateList();
                       }}>
                         Year
+                        {this.sortBy && this.sortBy.substring(1) === 'year' && (this.sortBy[0] === '-' ? '⮟' : '⮝')}
                       </a>
                     </th>
                     <th>
                       <a href="" onClick={(event) => {
                         event.preventDefault();
-                        this.sortBy = 'length';
+                        this.sortBy = this.sortBy === '+length' ? '-length' : '+length';
                         this.updateList();
                       }}>
                         Length
+                        {this.sortBy && this.sortBy.substring(1) === 'length' && (this.sortBy[0] === '-' ? '⮟' : '⮝')}
                       </a>
                     </th>
                     <th>Video</th>
