@@ -24,6 +24,21 @@ class App extends Component {
       videoInfos = videoInfos.filter((videoInfo) => videoInfo.videoTitlePlain.toLowerCase().indexOf(searchText.toLowerCase()) !== -1);
     }
 
+    if (this.sortBy) {
+      videoInfos = videoInfos.sort((vi1, vi2) => {
+        switch (this.sortBy) {
+          case 'title':
+            return vi1.videoTitlePlain.toLowerCase().localeCompare(vi2.videoTitlePlain.toLowerCase());
+          case 'rating':
+            return (vi2.movie ? vi2.movie.rating : 0) - (vi1.movie ? vi1.movie.rating : 0);
+          case 'year':
+            return (vi1.movie ? vi1.movie.year : 0) - (vi2.movie ? vi2.movie.year : 0);
+          case 'length':
+            return (vi1.movie ? vi1.movie.length : 0) - (vi2.movie ? vi2.movie.length : 0);
+        }
+      });
+    }
+
     this.setState({ videoInfos });
   }
 
@@ -51,12 +66,44 @@ class App extends Component {
             <thead>
                 <tr>
                     <th>Image</th>
-                    <th>Title</th>
-                    <th>Rating</th>
+                    <th>
+                      <a href="" onClick={(event) => {
+                        event.preventDefault();
+                        this.sortBy = 'title';
+                        this.updateList();
+                      }}>
+                        Title
+                      </a>
+                    </th>
+                    <th>
+                      <a href="" onClick={(event) => {
+                        event.preventDefault();
+                        this.sortBy = 'rating';
+                        this.updateList();
+                      }}>
+                        Rating
+                      </a>
+                    </th>
                     <th>Genre</th>
                     <th>Country</th>
-                    <th>Year</th>
-                    <th>Length</th>
+                    <th>
+                      <a href="" onClick={(event) => {
+                        event.preventDefault();
+                        this.sortBy = 'year';
+                        this.updateList();
+                      }}>
+                        Year
+                      </a>
+                    </th>
+                    <th>
+                      <a href="" onClick={(event) => {
+                        event.preventDefault();
+                        this.sortBy = 'length';
+                        this.updateList();
+                      }}>
+                        Length
+                      </a>
+                    </th>
                     <th>Video</th>
                 </tr>
             </thead>
