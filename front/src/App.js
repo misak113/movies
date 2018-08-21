@@ -30,7 +30,7 @@ class App extends Component {
 
     const searchText = this.searchInput.value;
     if (searchText) {
-      videoInfos = videoInfos.filter((videoInfo) => videoInfo.videoTitlePlain.toLowerCase().indexOf(searchText.toLowerCase()) !== -1);
+      videoInfos = videoInfos.filter((videoInfo) => videoInfo.videoTitlePlain.toLowerCase().indexOf(removeDiacritics(searchText).toLowerCase()) !== -1);
     }
 
     if (this.filterGenres.length > 0) {
