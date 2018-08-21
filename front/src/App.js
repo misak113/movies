@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import _ from 'lodash';
 import removeDiacritics from './removeDiacritics';
 import './App.css';
+const serverPort = 4000;
 
 class App extends Component {
 
@@ -82,6 +83,22 @@ class App extends Component {
 
   getVideoTitle(videoInfo) {
     return videoInfo.movie ? videoInfo.movie.title : videoInfo.name;
+  }
+
+  playInVlc(videoFilePath, enqueue = false) {
+    fetch(`http://localhost:${serverPort}/play-in-vlc`, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        videoFilePath,
+        enqueue,
+      }),
+    })
+    .then((response) => response.json())
+    .then((data) => console.info('playing', data))
+    .catch((error) => console.error(error));
   }
 
   render() {
@@ -236,8 +253,11 @@ class App extends Component {
                         {videoInfo.movie ? videoInfo.movie.length + ' min' : null}
                       </td>
                       <td title={winFilePath}>
-                        <a href={'file://' + winFilePath} target="_blank">
+                        <a className="btn btn-sm btn-success" href={'file://' + winFilePath} onClick={() => this.playInVlc(winFilePath)} target="_blank">
                           PLAY
+                        </a>
+                        <a className="btn btn-sm btn-primary" href={'file://' + winFilePath} onClick={() => this.playInVlc(winFilePath, true)} target="_blank">
+                          ENQUEUE
                         </a>
                       </td>
                     </tr>
