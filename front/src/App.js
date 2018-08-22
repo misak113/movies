@@ -71,6 +71,9 @@ class App extends Component {
           case '+year':
           case '-year':
             return ((vi1.movie ? vi1.movie.year : 0) - (vi2.movie ? vi2.movie.year : 0)) * direction;
+          case '+serie':
+          case '-serie':
+            return ((vi1.serie ? vi1.serie * 100 + vi1.episode : 0) - (vi2.serie ? vi2.serie * 100 + vi2.episode : 0)) * direction;
           case '+length':
           case '-length':
             return ((vi1.movie ? vi1.movie.length : 0) - (vi2.movie ? vi2.movie.length : 0)) * direction;
@@ -160,6 +163,16 @@ class App extends Component {
                     <th>
                       <a href="" onClick={(event) => {
                         event.preventDefault();
+                        this.sortBy = this.sortBy === '+serie' ? '-serie' : '+serie';
+                        this.updateList();
+                      }}>
+                        Serie
+                        {this.sortBy && this.sortBy.substring(1) === 'serie' && (this.sortBy[0] === '-' ? '⮟' : '⮝')}
+                      </a>
+                    </th>
+                    <th>
+                      <a href="" onClick={(event) => {
+                        event.preventDefault();
                         this.sortBy = this.sortBy === '+length' ? '-length' : '+length';
                         this.updateList();
                       }}>
@@ -216,6 +229,7 @@ class App extends Component {
                     </th>
                     <th></th>
                     <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -245,6 +259,9 @@ class App extends Component {
                       </td>
                       <td>
                         {videoInfo.movie ? videoInfo.movie.year : null}
+                      </td>
+                      <td>
+                        {videoInfo.serie && videoInfo.episode ? <span><strong>S{videoInfo.serie}</strong>&nbsp;<i>E{videoInfo.episode}</i></span> : null}
                       </td>
                       <td
                         title={videoLength ? videoLength + ' min' : null}
