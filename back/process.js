@@ -179,6 +179,28 @@ function parseYear(spacedName) {
     return { year };
 }
 
+function getCreatorSection($creators, sectionName) {
+    let $creatorSection;
+    $creators.each(function () {
+        if (jQuery(this).find('h4').text().trim() === sectionName + ':') {
+            $creatorSection = jQuery(this);
+        }
+    });
+    return $creatorSection;
+}
+
+function parseCreators($creatorSection) {
+    const creators = [];
+    $creatorSection.each(function () {
+        const $anchors = jQuery(this).find('span a');
+        $anchors.each(function () {
+            const $anchor = jQuery(this);
+            creators.push({ name: $anchor.text().trim(), link: 'https://www.csfd.cz' + $anchor.attr('href') });
+        });
+    });
+    return creators;
+}
+
 async function run() {
     const videoInfos = await getVideoInfos();
     fs.writeFileSync(videoInfosPath, JSON.stringify(videoInfos));
@@ -250,6 +272,13 @@ async function getVideoInfos() {
                     const origin = $csfdOverview.find('#profile .info .origin').text().trim().match(/([a-zA-Z0-9ěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮ \/]+), (\d{4,4})( - (\d{4,4}))?, ((\d+) h )?(\d+)(x(\d+)(–(\d+))?)? min/i);
                     const hours = origin[5] ? parseInt(origin[6]) : 0;
                     const minutes = typeof origin[8] === 'undefined' ? parseInt(origin[7]) : parseInt(origin[7]) * (parseInt(origin[9]) + parseInt(origin[11] || origin[9])) / 2;
+                    const $creators = $csfdOverview.find('#profile .info .creators div');
+                    const $directors = getCreatorSection($creators, 'Režie');
+                    const directors = $directors ? parseCreators($directors) : [];
+                    const $writers = getCreatorSection($creators, 'Scénář');
+                    const writers = $writers ? parseCreators($writers) : [];
+                    const $actors = getCreatorSection($creators, 'Hrají');
+                    const actors = $actors ? parseCreators($actors) : [];
                     videoInfo.movie = {
                         title,
                         rating,
@@ -261,6 +290,9 @@ async function getVideoInfos() {
                         image,
                         csfdOverviewLink,
                         description,
+                        directors,
+                        writers,
+                        actors,
                     };
                     videoInfo.serie = serie;
                     videoInfo.episode = episode;
