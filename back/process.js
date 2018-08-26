@@ -189,7 +189,7 @@ async function getVideoInfos() {
     const bar = new ProgressBar('  processing [:bar] :rate videos per second :percent (:current/:total) :etas', {
         complete: '=',
         incomplete: ' ',
-        width: 30,
+        width: 20,
         total: movieFilePaths.length,
     });
     const movieFilePathsChunks = _.chunk(movieFilePaths, 1);
@@ -274,7 +274,7 @@ async function getVideoInfos() {
                 console.error(videoInfo.filePath, error);
             }
         } finally {
-            bar.tick(1);
+            bar.tick();
         }
     }
     return videoInfos;
