@@ -12,6 +12,7 @@ const { window } = new JSDOM();
 const { document } = (new JSDOM('')).window;
 global.document = document;
 const jQuery = require('jquery')(window);
+const ProgressBar = require('progress');
 
 Object.assign(process.env, require('./env.json'));
 
@@ -185,6 +186,12 @@ async function run() {
 
 async function getVideoInfos() {
     const movieFilePaths = await loadOrSaveCache('filePaths', () => scanMovies(movieDirectoryPaths, movieExcludePaths), [1, 'hour']);
+    const bar = new ProgressBar('  processing [:bar] :rate videos per second :percent (:current/:total) :etas', {
+        complete: '=',
+        incomplete: ' ',
+        width: 30,
+        total: movieFilePaths.length,
+    });
     const movieFilePathsChunks = _.chunk(movieFilePaths, 1);
     let videoInfos = [];
     for (const movieFilePathsChunk of movieFilePathsChunks) {
@@ -234,7 +241,6 @@ async function getVideoInfos() {
                         uri: csfdOverviewLink,
                         gzip: true,
                     }), [Math.round(Math.random() * 30 + 6), 'days']);
-                    process.stdout.write('.');
                     const $csfdOverview = jQuery(csfdOverview);
                     const title = $csfdOverview.find('#profile .info .header [itemprop="name"]').text().trim();
                     const rating = parseInt($csfdOverview.find('#rating .average').text().trim().match(/(\d+)%/)[1]);
@@ -258,7 +264,6 @@ async function getVideoInfos() {
                     };
                     videoInfo.serie = serie;
                     videoInfo.episode = episode;
-                    process.stdout.write('.');
                 }
             }
         } catch (error) {
@@ -267,6 +272,8 @@ async function getVideoInfos() {
             } else {
                 throw error;
             }
+        } finally {
+            bar.tick(1);
         }
     }
     return videoInfos;
