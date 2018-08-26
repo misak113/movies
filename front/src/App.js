@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Select from 'react-select';
+import AsyncSelect from 'react-select/lib/Async';
 import _ from 'lodash';
 import removeDiacritics from './removeDiacritics';
 import './App.css';
@@ -251,19 +251,37 @@ class App extends Component {
                     <th></th>
                     <th></th>
                     <th>
-                      <Select className="select" onChange={(value) => {
+                      <AsyncSelect className="select" defaultOptions loadOptions={(inputValue, callback) => {
+                        callback(
+                          creatorsOptions
+                            .filter((creatorOption) => creatorOption.label && creatorOption.label.toLowerCase().indexOf(inputValue.toLowerCase()) !== -1)
+                            .slice(0, 20)
+                        );
+                      }} onChange={(value) => {
                         this.director = value.value;
                         this.updateList();
                       }} options={creatorsOptions}/>
                     </th>
                     <th>
-                      <Select className="select" onChange={(value) => {
+                      <AsyncSelect className="select" defaultOptions loadOptions={(inputValue, callback) => {
+                        callback(
+                          creatorsOptions
+                            .filter((creatorOption) => creatorOption.label && creatorOption.label.toLowerCase().indexOf(inputValue.toLowerCase()) !== -1)
+                            .slice(0, 20)
+                        );
+                      }} onChange={(value) => {
                         this.writer = value.value;
                         this.updateList();
                       }} options={creatorsOptions}/>
                     </th>
                     <th>
-                      <Select className="select" onChange={(value) => {
+                      <AsyncSelect className="select" defaultOptions loadOptions={(inputValue, callback) => {
+                        callback(
+                          creatorsOptions
+                            .filter((creatorOption) => creatorOption.label && creatorOption.label.toLowerCase().indexOf(inputValue.toLowerCase()) !== -1)
+                            .slice(0, 20)
+                        );
+                      }} onChange={(value) => {
                         this.actor = value.value;
                         this.updateList();
                       }} options={creatorsOptions}/>
