@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Select from 'react-select';
 import _ from 'lodash';
 import removeDiacritics from './removeDiacritics';
 import './App.css';
@@ -22,6 +23,10 @@ class App extends Component {
     this.setState({
       countries: _.uniq(_.flatten(this.videoInfos.filter((videoInfo) => videoInfo.movie).map((videoInfo) => videoInfo.movie.country))),
       genres: _.uniq(_.flatten(this.videoInfos.filter((videoInfo) => videoInfo.movie).map((videoInfo) => videoInfo.movie.genre))),
+      creators: _.uniq(
+        _.flatten(this.videoInfos.filter((videoInfo) => videoInfo.movie).map((videoInfo) => [...videoInfo.movie.directors, ...videoInfo.movie.writers, ...videoInfo.movie.actors]))
+        .map((creator) => creator.name)
+      ),
     });
     this.updateList();
   }
@@ -56,6 +61,18 @@ class App extends Component {
 
     if (this.maxYearInput.value) {
       videoInfos = videoInfos.filter((videoInfo) => videoInfo.movie && videoInfo.movie.year <= parseInt(this.maxYearInput.value));
+    }
+
+    if (this.director) {
+      videoInfos = videoInfos.filter((videoInfo) => videoInfo.movie && videoInfo.movie.directorsIndex[this.director]);
+    }
+
+    if (this.writer) {
+      videoInfos = videoInfos.filter((videoInfo) => videoInfo.movie && videoInfo.movie.writersIndex[this.writer]);
+    }
+
+    if (this.actor) {
+      videoInfos = videoInfos.filter((videoInfo) => videoInfo.movie && videoInfo.movie.actorsIndex[this.actor]);
     }
 
     if (this.sortBy) {
@@ -105,8 +122,9 @@ class App extends Component {
   }
 
   render() {
+    const creatorsOptions = [{ value: null, label: 'nobody' }, ...this.state.creators ? this.state.creators.map((creator) => ({ value: creator, label: creator })) : []];
     return (
-      <div className="container">
+      <div>
         <div className="row">
           <div className="col-sm">
             <h1>Movies</h1>
@@ -180,6 +198,9 @@ class App extends Component {
                         {this.sortBy && this.sortBy.substring(1) === 'length' && (this.sortBy[0] === '-' ? '⮟' : '⮝')}
                       </a>
                     </th>
+                    <th>Directors</th>
+                    <th>Writers</th>
+                    <th>Actors</th>
                     <th>Video</th>
                 </tr>
                 <tr>
@@ -188,8 +209,8 @@ class App extends Component {
                     <th>
                       <form onSubmit={(event) => { event.preventDefault(); this.updateList()}}>
                         <div className="form-group">
-                          <input type="number" className="form-control" placeholder="0 - min" ref={(minRatingInput) => this.minRatingInput = minRatingInput}/>
-                          <input type="number" className="form-control" placeholder="100 - max" ref={(maxRatingInput) => this.maxRatingInput = maxRatingInput}/>
+                          <input type="number" className="form-control input" placeholder="0 - min" ref={(minRatingInput) => this.minRatingInput = minRatingInput}/>
+                          <input type="number" className="form-control input" placeholder="100 - max" ref={(maxRatingInput) => this.maxRatingInput = maxRatingInput}/>
                         </div>
                         <button type="submit" style={{ display: 'none' }}/>
                       </form>
@@ -221,20 +242,38 @@ class App extends Component {
                     <th>
                       <form onSubmit={(event) => { event.preventDefault(); this.updateList()}}>
                         <div className="form-group">
-                          <input type="number" className="form-control" placeholder="min" ref={(minYearInput) => this.minYearInput = minYearInput}/>
-                          <input type="number" className="form-control" placeholder="max" ref={(maxYearInput) => this.maxYearInput = maxYearInput}/>
+                          <input type="number" className="form-control input" placeholder="min" ref={(minYearInput) => this.minYearInput = minYearInput}/>
+                          <input type="number" className="form-control input" placeholder="max" ref={(maxYearInput) => this.maxYearInput = maxYearInput}/>
                         </div>
                         <button type="submit" style={{ display: 'none' }}/>
                       </form>
                     </th>
                     <th></th>
                     <th></th>
+                    <th>
+                      <Select className="select" onChange={(value) => {
+                        this.director = value.value;
+                        this.updateList();
+                      }} options={creatorsOptions}/>
+                    </th>
+                    <th>
+                      <Select className="select" onChange={(value) => {
+                        this.writer = value.value;
+                        this.updateList();
+                      }} options={creatorsOptions}/>
+                    </th>
+                    <th>
+                      <Select className="select" onChange={(value) => {
+                        this.actor = value.value;
+                        this.updateList();
+                      }} options={creatorsOptions}/>
+                    </th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
               {this.state.videoInfos
-                ? this.state.videoInfos.map((videoInfo) => {
+                ? this.state.videoInfos.slice(0, 100).map((videoInfo) => {
                   const videoLength = videoInfo.videoInfo ? Math.round(videoInfo.videoInfo.format.duration / 60) : null;
                   const winLetter = videoInfo.filePath.match(/^\/(\w)\//)[1];
                   const winFilePath = winLetter + ':' + videoInfo.filePath.substring(2).replace(/\//g, '\\');
@@ -269,6 +308,15 @@ class App extends Component {
                       >
                         {videoInfo.movie ? videoInfo.movie.length + ' min' : null}
                       </td>
+                      <td>
+                        {this.renderCreators(videoInfo, videoInfo.movie.directors)}
+                      </td>
+                      <td>
+                        {this.renderCreators(videoInfo, videoInfo.movie.writers)}
+                      </td>
+                      <td>
+                        {this.renderCreators(videoInfo, videoInfo.movie.actors)}
+                      </td>
                       <td title={winFilePath}>
                         <a className="btn btn-sm btn-success" href={'file://' + winFilePath} onClick={() => this.playInVlc(winFilePath)} target="_blank">
                           PLAY
@@ -285,6 +333,26 @@ class App extends Component {
         </table>
     </div>
     );
+  }
+
+  renderCreators(videoInfo, creators) {
+    return (
+      <div>
+        {videoInfo.movie ? (
+          this.state.showAllCreatorsVideoInfo === videoInfo
+            ? creators.map((creator) => this.renderCreator(creator))
+            : (creators.length > 0 ? this.renderCreator(creators[0]) : null)
+        ) : null}
+        <a href="" onClick={(event) => {
+          event.preventDefault();
+          this.setState({ showAllCreatorsVideoInfo: videoInfo });
+        }}>...</a>
+      </div>
+    );
+  }
+
+  renderCreator(creator) {
+    return <a key={creator.name} className="creator" target="_blank" href={creator.link}>{creator.name}</a>;
   }
 }
 

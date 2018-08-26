@@ -294,6 +294,9 @@ async function getVideoInfos() {
                         writers,
                         actors,
                     };
+                    videoInfo.movie.directorsIndex = videoInfo.movie.directors.reduce((index, creator) => ({ ...index, [creator.name]: true }), {});
+                    videoInfo.movie.writersIndex = videoInfo.movie.writers.reduce((index, creator) => ({ ...index, [creator.name]: true }), {});
+                    videoInfo.movie.actorsIndex = videoInfo.movie.actors.reduce((index, creator) => ({ ...index, [creator.name]: true }), {});
                     videoInfo.serie = serie;
                     videoInfo.episode = episode;
                 } else {

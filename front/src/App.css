@@ -1,0 +1,14 @@
+
+.select {
+    width: 160px;
+}
+
+.input {
+    width: 60px;
+}
+
+.creator {
+    font-size: 9px;
+    display: inline-block;
+    margin-right: 5px;
+}
