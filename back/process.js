@@ -136,7 +136,7 @@ function sanitizeName(fileBaseName) {
         .match(/^([^\(\)]+)/i)[1]
         .replace(/([^a-zA-Z0-9ěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮ]|_)/gi, ' ')
         .replace(/\s+/g, ' ');
-    const meanlessWords = ['hdtv', 'czdab', 'endab', 'xvid', 'divx', 'h264', '1080', 'x264', '480p', 'dvdrip', 'dvd rip', 'brrip', 'dvb', 'dlrip', 'dabing', 'tv rip', ' část ', 'titulky', ' cz ', ' en '];
+    const meanlessWords = ['hdtv', 'czdab', 'xvid', 'divx', 'h264', '1080', 'x264', '480p', 'dvdrip', 'dvd rip', 'brrip', 'dvb', 'dlrip', 'dabing', 'tv rip', ' část ', 'titulky', ' cz ', ' en '];
     const firstIndexOfMeanlessWord = meanlessWords
         .reduce((index, word) => {
             const indexOfWord = spacedName.toLowerCase().indexOf(word);
@@ -174,7 +174,7 @@ function parseSeries(spacedName) {
 function parseYear(spacedName) {
     let seriesMatches, year;
     if (seriesMatches = spacedName.match(/(^([a-zA-Z0-9ěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮ ]*)((19|20)\d{2,2}))/i)) {
-        year = parseInt(seriesMatches[2]);
+        year = parseInt(seriesMatches[3]);
     }
     return { year };
 }
