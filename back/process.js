@@ -129,8 +129,8 @@ function searchGoogle(query, siteSearch = "http://www.csfd.cz/") {
 
 function sanitizeName(fileBaseName) {
     let yearBracketsMatches;
-    if (yearBracketsMatches = fileBaseName.match(/\((\d{4,4})\)/)) {
-        fileBaseName = fileBaseName.replace(yearBracketsMatches[1], yearBracketsMatches[1].substring(1, 4));
+    if (yearBracketsMatches = fileBaseName.match(/(\(\d{4,4}\))/)) {
+        fileBaseName = fileBaseName.replace(yearBracketsMatches[1], ' ' + yearBracketsMatches[1].substring(1, 5) + ' ');
     }
     const spacedName = fileBaseName
         .match(/^([^\(\)]+)/i)[1]
