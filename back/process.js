@@ -147,7 +147,7 @@ function sanitizeName(fileBaseName) {
         .replace(/(\s+)(cz|dl|cd\d|vtv|avi|lol|tit|ing|dl|web|xor|zip|dub|dd5|bluray|ac3|aac|avi)(\s+|$)/gi, ' ')
         .replace(/\s+/g, ' ');
     const firstPartNameMatches = sanitizedName
-        .match(/(^([a-zA-Z0-9ěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮ ]*)((19|20)\d{2,2}|s\d{2,2}e\d{2,2}|\d{1,2}x\d{2,2}))/i);
+        .match(/(^([a-zA-Z0-9ěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮ ]*\D)((19|20)\d{2,2}|s\d{2,2}e\d{2,2}|\d{1,2}x\d{2,2}))/i);
     const name = firstPartNameMatches ? firstPartNameMatches[1] : sanitizedName;
     const simpleName = firstPartNameMatches ? (firstPartNameMatches[2].length < 2 ? '' : firstPartNameMatches[2]).trim() : sanitizedName;
     return { spacedName, sanitizedName, name, simpleName };
