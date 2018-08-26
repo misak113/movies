@@ -261,7 +261,7 @@ class App extends Component {
                         {videoInfo.movie ? videoInfo.movie.year : null}
                       </td>
                       <td>
-                        {videoInfo.serie && videoInfo.episode ? <span><strong>S{videoInfo.serie}</strong>&nbsp;<i>E{videoInfo.episode}</i></span> : null}
+                        {typeof videoInfo.serie !== 'undefined' && typeof videoInfo.episode !== 'undefined' ? <span><strong>S{videoInfo.serie}</strong>&nbsp;<i>E{videoInfo.episode}</i></span> : null}
                       </td>
                       <td
                         title={videoLength ? videoLength + ' min' : null}
