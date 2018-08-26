@@ -268,9 +268,10 @@ async function getVideoInfos() {
             }
         } catch (error) {
             if (error.errors && error.errors[0] && error.errors[0].domain === 'usageLimits') {
+                console.warn('Skip all search because of usage limit');
                 skipSearch = true;
             } else {
-                throw error;
+                console.error(videoInfo.filePath, error);
             }
         } finally {
             bar.tick(1);
