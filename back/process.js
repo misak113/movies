@@ -234,7 +234,7 @@ async function getVideoInfos() {
                         uri: csfdOverviewLink,
                         gzip: true,
                     }), [Math.round(Math.random() * 30 + 6), 'days']);
-                    console.log(simpleNameYear, videoInfo.filePath, csfdOverviewLink);
+                    process.stdout.write('.');
                     const $csfdOverview = jQuery(csfdOverview);
                     const title = $csfdOverview.find('#profile .info .header [itemprop="name"]').text().trim();
                     const rating = parseInt($csfdOverview.find('#rating .average').text().trim().match(/(\d+)%/)[1]);
@@ -258,7 +258,7 @@ async function getVideoInfos() {
                     };
                     videoInfo.serie = serie;
                     videoInfo.episode = episode;
-                    console.log(videoInfo);
+                    process.stdout.write('.');
                 }
             }
         } catch (error) {
