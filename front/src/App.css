@@ -12,3 +12,16 @@
     display: inline-block;
     margin-right: 5px;
 }
+
+.video-counts-wrapper {
+    text-align: center;
+}
+
+.video-counts {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.sub-video td {
+    background-color: antiquewhite;
+}

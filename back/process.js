@@ -203,7 +203,8 @@ function parseCreators($creatorSection) {
 
 async function run() {
     const videoInfos = await getVideoInfos();
-    fs.writeFileSync(videoInfosPath, JSON.stringify(videoInfos));
+    const groupedVideoInfos = groupVideoInfosByMovie(videoInfos);
+    fs.writeFileSync(videoInfosPath, JSON.stringify(groupedVideoInfos));
 }
 
 async function getVideoInfos() {
@@ -317,6 +318,18 @@ async function getVideoInfos() {
         }
     }
     return videoInfos;
+}
+
+function groupVideoInfosByMovie(videoInfos) {
+    const groups = _.groupBy(videoInfos, (videoInfo) => videoInfo.movie ? videoInfo.movie.csfdOverviewLink : videoInfo.filePath);
+    return Object.keys(groups).map((key) => {
+        const group = groups[key];
+        return {
+            uid: key,
+            movie: group[0].movie,
+            videoInfos: group,
+        };
+    });
 }
 
 process.on('unhandledRejection', (error) => { throw error; });
