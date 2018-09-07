@@ -25,3 +25,7 @@
 .sub-video td {
     background-color: antiquewhite;
 }
+
+.random-videoInfo {
+    display: inline-block;
+}

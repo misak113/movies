@@ -143,6 +143,20 @@ class App extends Component {
               <label htmlFor="searchInput">Search</label>
               <input type="search" className="form-control" id="searchInput" placeholder="Search" ref={(searchInput) => this.searchInput = searchInput}/>
             </form>
+            <div>
+              <div className="alert alert-dark random-videoInfo">
+              <a href="" onClick={(event) => {
+                event.preventDefault();
+                this.searchInput.value = this.state.randomVideoInfo.videoTitle;
+                this.updateList();
+              }}>{this.state.randomVideoInfo ? this.state.randomVideoInfo.videoTitle : null}</a>
+              </div>
+              <button className="btn btn-info" onClick={(event) => {
+                event.preventDefault();
+                const randomIndex = Math.floor(Math.random() * this.videoInfos.length);
+                this.setState({ randomVideoInfo: this.videoInfos[randomIndex] })
+              }}>Randomize</button>
+            </div>
           </div>
           </div>
         </div>
