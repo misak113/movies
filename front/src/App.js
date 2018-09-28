@@ -17,12 +17,12 @@ class App extends Component {
     const response = await fetch('videoInfos.json');
     this.videoInfos = await response.json();
     this.videoInfos.forEach((videoInfo) => {
-      videoInfo.videoTitle = this.getVideoTitle(videoInfo);
-      videoInfo.videoTitlePlain = removeDiacritics(videoInfo.videoTitle);
       videoInfo.videoInfos.forEach((subVideoInfo) => {
         subVideoInfo.videoTitle = this.getVideoTitle(subVideoInfo);
         subVideoInfo.videoTitlePlain = removeDiacritics(subVideoInfo.videoTitle);
       });
+      videoInfo.videoTitle = this.getVideoTitle(videoInfo);
+      videoInfo.videoTitlePlain = removeDiacritics(videoInfo.videoTitle);
     });
     this.setState({
       countries: _.uniq(_.flatten(this.videoInfos.filter((videoInfo) => videoInfo.movie).map((videoInfo) => videoInfo.movie.country))),
@@ -106,7 +106,7 @@ class App extends Component {
   }
 
   getVideoTitle(videoInfo) {
-    return videoInfo.movie ? videoInfo.movie.title : videoInfo.videoInfos[0].name;
+    return videoInfo.movie ? videoInfo.movie.title : videoInfo.videoInfos ? videoInfo.videoInfos[0].name : videoInfo.name;
   }
 
   playInVlc(videoFilePath, enqueue = false) {
