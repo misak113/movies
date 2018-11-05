@@ -128,6 +128,15 @@ class App extends Component {
     .catch((error) => console.error(error));
   }
 
+  copyToClipboard(videoFilePath) {
+    const copyText = document.createElement('input');
+    copyText.value = videoFilePath;
+    document.body.appendChild(copyText);
+    copyText.select();
+    document.execCommand("copy");
+    document.body.removeChild(copyText);
+  }
+
   render() {
     const creatorsOptions = [{ value: null, label: 'nobody' }, ...this.state.creators ? this.state.creators.map((creator) => ({ value: creator, label: creator })) : []];
     return (
@@ -386,6 +395,9 @@ class App extends Component {
               </a>
               <a className="btn btn-sm btn-primary" href={'file://' + winFilePath} onClick={() => this.playInVlc(winFilePath, true)} target="_blank">
                 ENQUEUE
+              </a>
+              <a className="btn btn-sm btn-info" href={'file://' + winFilePath} onClick={() => this.copyToClipboard(winFilePath)}>
+                Copy&nbsp;path
               </a>
             </div>
           ) : (
