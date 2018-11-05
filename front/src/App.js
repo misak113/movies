@@ -322,7 +322,7 @@ class App extends Component {
             <tbody>
               {this.state.videoInfos
                 ? this.state.videoInfos.slice(0, 100).map((videoInfo) => {
-                  return <Fragment>
+                  return <Fragment key={videoInfo.uid}>
                     {this.renderVideoInfo(videoInfo)}
                     {this.state.showVideosVideoInfo === videoInfo ? videoInfo.videoInfos.map((subVideoInfo) => this.renderVideoInfo(subVideoInfo, 'sub-video')) : null}
                   </Fragment>
