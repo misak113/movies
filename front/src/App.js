@@ -25,12 +25,15 @@ class App extends Component {
       videoInfo.videoTitlePlain = removeDiacritics(videoInfo.videoTitle);
     });
     this.setState({
-      countries: _.uniq(_.flatten(this.videoInfos.filter((videoInfo) => videoInfo.movie).map((videoInfo) => videoInfo.movie.country))),
-      genres: _.uniq(_.flatten(this.videoInfos.filter((videoInfo) => videoInfo.movie).map((videoInfo) => videoInfo.movie.genre))),
+      countries: _.uniq(_.flatten(this.videoInfos.filter((videoInfo) => videoInfo.movie).map((videoInfo) => videoInfo.movie.country)))
+        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())),
+      genres: _.uniq(_.flatten(this.videoInfos.filter((videoInfo) => videoInfo.movie).map((videoInfo) => videoInfo.movie.genre)))
+        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())),
       creators: _.uniq(
         _.flatten(this.videoInfos.filter((videoInfo) => videoInfo.movie).map((videoInfo) => [...videoInfo.movie.directors, ...videoInfo.movie.writers, ...videoInfo.movie.actors]))
         .map((creator) => creator.name)
-      ),
+      )
+      .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())),
     });
     this.updateList();
   }
