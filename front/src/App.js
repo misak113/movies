@@ -3,7 +3,7 @@ import AsyncSelect from 'react-select/lib/Async';
 import _ from 'lodash';
 import removeDiacritics from './removeDiacritics';
 import './App.css';
-const serverPort = 4000;
+const serverPort = parseInt(document.querySelector('meta[name="port"]').getAttribute("content"));
 
 class App extends Component {
 
@@ -350,7 +350,7 @@ class App extends Component {
     return (
       <tr key={videoInfo.uid} className={className}>
         <td title={videoInfo.movie ? videoInfo.movie.description : null}>
-          <img src={videoInfo.movie ? videoInfo.movie.image : null} width={60}/>
+          <img src={videoInfo.movie ? `https://${videoInfo.movie.image}` : null} width={60}/>
         </td>
         <td title={videoInfo.movie ? videoInfo.movie.description : null} className={!videoInfo.movie ? 'bg-danger' : null}>
           <a href={videoInfo.movie ? videoInfo.movie.csfdOverviewLink : null} target="_blank">
@@ -390,13 +390,22 @@ class App extends Component {
         <td className="video-counts-wrapper" title={winFilePath}>
           {!videoInfo.videoInfos || videoInfo.videoInfos.length === 1 ? (
             <div>
-              <a className="btn btn-sm btn-success" href={'file://' + winFilePath} onClick={() => this.playInVlc(winFilePath)} target="_blank">
+              <a className="btn btn-sm btn-success" href={'file://' + winFilePath} onClick={(event) => {
+                event.preventDefault();
+                this.playInVlc(winFilePath);
+              }} target="_blank">
                 PLAY
               </a>
-              <a className="btn btn-sm btn-primary" href={'file://' + winFilePath} onClick={() => this.playInVlc(winFilePath, true)} target="_blank">
+              <a className="btn btn-sm btn-primary" href={'file://' + winFilePath} onClick={(event) => {
+                event.preventDefault();
+                this.playInVlc(winFilePath, true);
+              }} target="_blank">
                 ENQUEUE
               </a>
-              <a className="btn btn-sm btn-info" href={'file://' + winFilePath} onClick={() => this.copyToClipboard(winFilePath)}>
+              <a className="btn btn-sm btn-info" href={'file://' + winFilePath} onClick={(event) => {
+                event.preventDefault();
+                this.copyToClipboard(winFilePath);
+              }}>
                 Copy&nbsp;path
               </a>
             </div>

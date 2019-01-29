@@ -1,13 +1,12 @@
+require('custom-env').env('local', __dirname).env(undefined, __dirname);
 
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const child_process = require('child_process');
 
-Object.assign(process.env, require('./env.json'));
-
-const vlcBin = process.env.vlc_bin;
-const port = process.env.PORT || 4000;
+const vlcBin = process.env.VLC_BIN;
+const port = process.env.PORT;
 
 const app = express();
 

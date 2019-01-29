@@ -1,0 +1,22 @@
+{
+	"name": "@misak113/movies",
+	"version": "1.0.0",
+	"description": "The movies",
+	"main": "main.js",
+	"scripts": {
+		"start": "electron .",
+		"install": "npm install --prefix=front && npm install --prefix=back",
+		"prepare": "npm run build",
+		"build": "npm run build-front",
+		"build-front": "npm run build --prefix=front"
+	},
+	"repository": "https://github.com/misak113/movies",
+	"keywords": [
+		"Movies"
+	],
+	"author": "Michael Zabka",
+	"license": "MIT",
+	"devDependencies": {
+		"electron": "^4.0.3"
+	}
+}

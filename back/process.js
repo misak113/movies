@@ -1,3 +1,4 @@
+require('custom-env').env('local', __dirname).env(undefined, __dirname);
 
 const fs = require('fs-extra');
 const _ = require('lodash');
@@ -13,8 +14,6 @@ const { document } = (new JSDOM('')).window;
 global.document = document;
 const jQuery = require('jquery')(window);
 const ProgressBar = require('progress');
-
-Object.assign(process.env, require('./env.json'));
 
 const googleSearch = new GoogleSearch({
     key: process.env.google_api_key,
