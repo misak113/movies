@@ -8,7 +8,8 @@
 		"install": "npm install --prefix=front && npm install --prefix=back",
 		"prepare": "npm run build",
 		"build": "npm run build-front",
-		"build-front": "npm run build --prefix=front"
+		"build-front": "npm run build --prefix=front",
+		"pack-win-x64": "electron-packager . movies --platform=win32 --arch=x64 --out=dist"
 	},
 	"repository": "https://github.com/misak113/movies",
 	"keywords": [
@@ -17,6 +18,7 @@
 	"author": "Michael Zabka",
 	"license": "MIT",
 	"devDependencies": {
-		"electron": "^4.0.3"
+		"electron": "^4.0.3",
+		"electron-packager": "^13.0.1"
 	}
 }
