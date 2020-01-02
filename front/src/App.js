@@ -342,7 +342,7 @@ class App extends Component {
       ? Math.round(currentVideoInfo.videoInfo.format.duration / 60)
       : null;
     const winLetter = currentVideoInfo.filePath
-      ? currentVideoInfo.filePath.match(/^\/(\w)\//)[1]
+      ? (currentVideoInfo.filePath.match(/^\/(\w)\//) && currentVideoInfo.filePath.match(/^\/(\w)\//)[1])
       : null;
     const winFilePath = currentVideoInfo.filePath
       ? winLetter + ':' + currentVideoInfo.filePath.substring(2).replace(/\//g, '\\')
