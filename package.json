@@ -18,7 +18,7 @@
 	"author": "Michael Zabka",
 	"license": "MIT",
 	"devDependencies": {
-		"electron": "^4.0.3",
+		"electron": "^7.2.4",
 		"electron-packager": "^13.0.1"
 	}
 }
